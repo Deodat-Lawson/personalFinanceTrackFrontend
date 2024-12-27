@@ -2,7 +2,7 @@
 import React, { FormEvent, useState } from 'react';
 import { CreditCard, DollarSign, Calendar, Tag, Loader2 } from 'lucide-react';
 import styles from '../../styles/spendingform.module.css';
-import {addSpending, Spending} from "@/lib/spendingService";
+import { addSpending, Spending } from "@/lib/spendingService";
 
 interface SpendingFormProps {
     onSpendingAdded: (newSpending: Spending) => void;
@@ -29,14 +29,19 @@ export default function SpendingForm({ onSpendingAdded }: SpendingFormProps) {
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
-        if (!description || !amount) return;
+
+        // Since all fields are required, we can check here as well
+        if (!description || !amount || !category || !dateSpent || !currency) {
+            return;
+        }
 
         setIsSubmitting(true);
+
         const newSpending: Spending = {
             description,
             amount: parseFloat(amount),
             category,
-            dateSpent: dateSpent || undefined,
+            dateSpent,
             currency,
         };
 
@@ -106,11 +111,14 @@ export default function SpendingForm({ onSpendingAdded }: SpendingFormProps) {
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
+                        required
                         className={styles.select}
                     >
                         <option value="">Select a category</option>
                         {categories.map((cat) => (
-                            <option key={cat} value={cat}>{cat}</option>
+                            <option key={cat} value={cat}>
+                                {cat}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -125,21 +133,27 @@ export default function SpendingForm({ onSpendingAdded }: SpendingFormProps) {
                         type="date"
                         value={dateSpent}
                         onChange={(e) => setDateSpent(e.target.value)}
+                        required
                         className={styles.input}
                     />
                 </div>
 
-
-                <div>
-                    <label>Currency: </label>
-
-                    {/* Option B: dropdown */}
-                    <select value={currency} onChange={e => setCurrency(e.target.value)} className={styles.select}>
+                {/* Currency Field */}
+                <div className={styles.fieldGroup}>
+                    <label className={styles.label}>
+                        Currency
+                    </label>
+                    <select
+                        value={currency}
+                        onChange={(e) => setCurrency(e.target.value)}
+                        required
+                        className={styles.select}
+                    >
+                        <option value="">Select a currency</option>
                         <option value="USD">USD</option>
                         <option value="EUR">EUR</option>
                         <option value="GBP">GBP</option>
                         <option value="JPY">JPY</option>
-                        {/* Add more as needed */}
                     </select>
                 </div>
 

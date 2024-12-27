@@ -12,17 +12,25 @@ export interface Income {
     currency?: string
 }
 
+export async function getCurrentMonthIncomeDetails():Promise<Income[]>{
+    const response = await axios.get<Income[]>(`${API_URL}/month/detail`)
+    console.log(response)
+    return response.data
+}
+
 
 export async function getCurrentMonthIncome(): Promise<number>{
     const response = await axios.get<number>(`${API_URL}/month`)
     return response.data
 }
 
-export async function getPreviousMonthIncome(): Promise<number>{
-    const response = await axios.get<number>(`${API_URL}/prevMonth`)
-    return response.data
+export async function getPreviousMonthIncome(n: number): Promise<number> {
+    // Use month as a query parameter instead
+    const response = await axios.get<number>(`${API_URL}/prevMonth`, {
+        params: { n },
+    });
+    return response.data;
 }
-
 export async function getAllIncomes(): Promise<Income[]>{
     const response = await axios.get<Income[]>(API_URL)
     return response.data

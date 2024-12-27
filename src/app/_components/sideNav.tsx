@@ -37,11 +37,6 @@ export default function SideNav() {
             href: '/ai'
         },
         {
-            icon: Wallet,
-            label: 'Finance Goals',
-            href: '/goals'
-        },
-        {
             icon: Clock,
             label: 'All Time History',
             href: '/history'

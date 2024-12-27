@@ -78,6 +78,15 @@
     color: rgb(239, 68, 68);
 }
 
+.positive {
+    color: #059669 !important;
+}
+
+.negative {
+    color: #dc2626 !important;
+}
+
+
 .chartsGrid {
     display: grid;
     grid-template-columns: 1fr;

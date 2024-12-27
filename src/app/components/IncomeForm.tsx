@@ -2,7 +2,7 @@
 import React, { FormEvent, useState } from 'react';
 import { CreditCard, DollarSign, Calendar, Tag, Loader2 } from 'lucide-react';
 import styles from '../../styles/incomeform.module.css';
-import {addIncome, Income} from "@/lib/incomeService";
+import { addIncome, Income } from "@/lib/incomeService";
 
 interface IncomeFormProps {
     onIncomeAdded: (newIncome: Income) => void;
@@ -18,24 +18,27 @@ const categories = [
     'Social Security',
     'Other Income'
 ];
+
 export default function IncomeForm({ onIncomeAdded }: IncomeFormProps) {
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [category, setCategory] = useState('');
-    const [dateSpent, setDateSpent] = useState('');
+    const [dateReceived, setDateReceived] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [currency, setCurrency] = useState('USD');
 
     async function handleSubmit(e: FormEvent) {
         e.preventDefault();
-        if (!description || !amount) return;
+
+        // Since all fields are required, we can do any extra validation here if needed
+        if (!description || !amount || !category || !dateReceived || !currency) return;
 
         setIsSubmitting(true);
         const newIncome: Income = {
             description,
             amount: parseFloat(amount),
             category,
-            dateSpent: dateSpent || undefined,
+            dateReceived,
             currency,
         };
 
@@ -46,7 +49,7 @@ export default function IncomeForm({ onIncomeAdded }: IncomeFormProps) {
             setDescription('');
             setAmount('');
             setCategory('');
-            setDateSpent('');
+            setDateReceived('');
             setCurrency('USD');
         } catch (error) {
             console.error('Error adding income:', error);
@@ -105,6 +108,7 @@ export default function IncomeForm({ onIncomeAdded }: IncomeFormProps) {
                     <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
+                        required
                         className={styles.select}
                     >
                         <option value="">Select a category</option>
@@ -122,23 +126,29 @@ export default function IncomeForm({ onIncomeAdded }: IncomeFormProps) {
                     </label>
                     <input
                         type="date"
-                        value={dateSpent}
-                        onChange={(e) => setDateSpent(e.target.value)}
+                        value={dateReceived}
+                        onChange={(e) => setDateReceived(e.target.value)}
+                        required
                         className={styles.input}
                     />
                 </div>
 
-
-                <div>
-                    <label>Currency: </label>
-
-                    {/* Option B: dropdown */}
-                    <select value={currency} onChange={e => setCurrency(e.target.value)} className={styles.select}>
+                {/* Currency Field */}
+                <div className={styles.fieldGroup}>
+                    <label className={styles.label}>
+                        Currency
+                    </label>
+                    <select
+                        value={currency}
+                        onChange={(e) => setCurrency(e.target.value)}
+                        required
+                        className={styles.select}
+                    >
+                        <option value="">Select a currency</option>
                         <option value="USD">USD</option>
                         <option value="EUR">EUR</option>
                         <option value="GBP">GBP</option>
                         <option value="JPY">JPY</option>
-                        {/* Add more as needed */}
                     </select>
                 </div>
 
