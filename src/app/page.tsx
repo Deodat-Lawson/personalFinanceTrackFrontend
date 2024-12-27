@@ -1,101 +1,114 @@
-import Image from "next/image";
+"use client"
+import React, { useEffect, useState } from 'react'
+import SpendingForm from './components/SpendingForm'
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { Wallet, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import styles from '../styles/home.module.css';
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+const Dashboard = () => {
+  const spendingData = [
+    { name: 'Housing', value: 1200, color: '#3B82F6' },
+    { name: 'Transportation', value: 400, color: '#10B981' },
+    { name: 'Food', value: 600, color: '#F59E0B' },
+    { name: 'Utilities', value: 300, color: '#6366F1' },
+    { name: 'Entertainment', value: 200, color: '#EC4899' }
+  ];
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const incomeData = [
+    { name: 'Salary', value: 3000, color: '#34D399' },
+    { name: 'Freelance', value: 800, color: '#60A5FA' },
+    { name: 'Investments', value: 400, color: '#A78BFA' }
+  ];
+
+  const StatCard = ({ title, amount, icon: Icon, trend, trendAmount }) => (
+      <div className={styles.statCard}>
+        <div className={styles.statHeader}>
+          <h3 className={styles.statTitle}>{title}</h3>
+          <div className={styles.iconWrapper}>
+            <Icon className={styles.icon} />
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        <div className={styles.statAmount}>
+          <span className={styles.amount}>${amount.toLocaleString()}</span>
+          {trend && (
+              <span className={`${styles.trend} ${trend === 'up' ? styles.trendUp : styles.trendDown}`}>
+            {trend === 'up' ? '+' : '-'}{trendAmount}%
+          </span>
+          )}
+        </div>
+      </div>
   );
-}
+
+  const ChartCard = ({ title, data }) => (
+      <div className={styles.chartCard}>
+        <h2 className={styles.chartTitle}>{title}</h2>
+        <div className={styles.chartContainer}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                  data={data}
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={5}
+                  dataKey="value"
+              >
+                {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        <div className={styles.legendGrid}>
+          {data.map((item, index) => (
+              <div key={index} className={styles.legendItem}>
+                <div
+                    className={styles.legendDot}
+                    style={{ backgroundColor: item.color }}
+                />
+                <span className={styles.legendLabel}>{item.name}</span>
+                <span className={styles.legendValue}>${item.value}</span>
+              </div>
+          ))}
+        </div>
+      </div>
+  );
+
+  return (
+      <div className={styles.container}>
+        <h1 className={styles.title}>Financial Overview</h1>
+
+        <div className={styles.statsGrid}>
+          <StatCard
+              title="Total Income"
+              amount={0}
+              icon={DollarSign}
+              // trend="up"
+              // trendAmount={12}
+          />
+            <StatCard
+                title="Current Spending"
+                amount={2700}
+                icon={Wallet}
+                // trend="down"
+                // trendAmount={8}
+            />
+          <StatCard
+              title="Last Month Spending"
+              amount={2500}
+              icon={TrendingDown}
+
+          />
+
+        </div>
+
+        <div className={styles.chartsGrid}>
+          <ChartCard title="Monthly Spending" data={spendingData} />
+          <ChartCard title="Monthly Income" data={incomeData} />
+        </div>
+      </div>
+  );
+};
+
+export default Dashboard;

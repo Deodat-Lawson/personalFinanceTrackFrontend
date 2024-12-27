@@ -1,0 +1,130 @@
+/* SpendingForm.module.css */
+.container {
+    max-width: 28rem;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    padding: 1.5rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: rgb(31, 41, 55);
+    margin-bottom: 1.5rem;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: rgb(55, 65, 81);
+}
+
+.labelIcon {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+    color: rgb(156, 163, 175);
+}
+
+.input {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border: 1px solid rgb(209, 213, 219);
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+}
+
+.input:focus {
+    outline: none;
+    border-color: rgb(59, 130, 246);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.amountWrapper {
+    position: relative;
+}
+
+.currencySymbol {
+    position: absolute;
+    left: 0.75rem;
+    top: 0.5rem;
+    color: rgb(107, 114, 128);
+}
+
+.amountInput {
+    composes: input;
+    padding-left: 2rem;
+}
+
+.select {
+    composes: input;
+    background-color: white;
+    cursor: pointer;
+}
+
+.submitButton {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: rgb(37, 99, 235);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+    background-color: rgb(29, 78, 216);
+}
+
+.submitButton:disabled {
+    background-color: rgb(147, 197, 253);
+    cursor: not-allowed;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error {
+    color: rgb(220, 38, 38);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.success {
+    color: rgb(22, 163, 74);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
