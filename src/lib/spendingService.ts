@@ -11,6 +11,17 @@ export interface Spending {
     currency?: string
 }
 
+export async function getCurrentMonthSpendings(): Promise<number>{
+    const response = await axios.get<number>(`${API_URL}/month`)
+    return response.data
+}
+
+export async function getPreviousMonthSpendings(): Promise<number>{
+    const response = await axios.get<number>(`${API_URL}/prevMonth`)
+    return response.data
+}
+
+
 export async function getAllSpendings(): Promise<Spending[]>{
     const response = await axios.get<Spending[]>(API_URL)
     return response.data

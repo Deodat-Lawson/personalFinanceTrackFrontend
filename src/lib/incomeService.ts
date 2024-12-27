@@ -1,4 +1,5 @@
 import axios from "axios"
+import {Spending} from "@/lib/spendingService";
 
 const API_URL = 'http://localhost:8080/api/incomes'
 
@@ -9,6 +10,17 @@ export interface Income {
     category?: string
     dateReceived?: string
     currency?: string
+}
+
+
+export async function getCurrentMonthIncome(): Promise<number>{
+    const response = await axios.get<number>(`${API_URL}/month`)
+    return response.data
+}
+
+export async function getPreviousMonthIncome(): Promise<number>{
+    const response = await axios.get<number>(`${API_URL}/prevMonth`)
+    return response.data
 }
 
 export async function getAllIncomes(): Promise<Income[]>{

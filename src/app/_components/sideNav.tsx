@@ -43,7 +43,7 @@ export default function SideNav() {
         },
         {
             icon: Clock,
-            label: 'History',
+            label: 'All Time History',
             href: '/history'
         }
     ];
