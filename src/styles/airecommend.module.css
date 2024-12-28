@@ -143,3 +143,58 @@
     border: none;
     border-top: 1px solid #ccc;
 }
+
+/* Container for the entire page */
+.container {
+    max-width: 900px; /* or whatever max width you prefer */
+    margin: 0 auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ... other styles ... */
+
+/* Recommendations Section */
+.recommendations {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Budget Overview Grid */
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+/* The card wrapper */
+.stat-card {
+    background-color: #fff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 16px;
+
+    /* Set desired width & height */
+    width: 100%;      /* Fills the grid column width */
+    height: auto;     /* Adjust automatically based on content */
+
+    /* If you need a fixed height, uncomment the line below */
+    /* height: 200px; */
+}
+
+/* Example text styles */
+.stat-label {
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 600;
+}

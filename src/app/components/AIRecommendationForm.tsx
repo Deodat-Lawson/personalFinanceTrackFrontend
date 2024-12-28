@@ -1,7 +1,18 @@
-"use client"
-import React, { useState, FormEvent } from 'react';
+"use client";
+import React, {useState, FormEvent, JSX} from 'react';
 import { DollarSign, Send, TrendingUp, AlertCircle } from 'lucide-react';
 import styles from '../../styles/airecommend.module.css';
+import { optimizeSpending } from '@/lib/aiService';
+
+function formatToParagraphs(text: string): JSX.Element[] {
+    return text
+        .split('\n\n')
+        .map((paragraph, index) => (
+            <p key={index} style={{ marginBottom: '1em' }}>
+                {paragraph}
+            </p>
+        ));
+}
 
 const BudgetAdvisor = () => {
     const [budget, setBudget] = useState('');
@@ -15,8 +26,7 @@ const BudgetAdvisor = () => {
         { category: 'Health', amount: '' }
     ]);
 
-
-    const [recommendations, setRecommendations] = useState(null);
+    const [recommendations, setRecommendations] = useState<any>(null);
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -31,8 +41,26 @@ const BudgetAdvisor = () => {
         setLoading(true);
         setErrorMessage('');
 
-
+        runOptimization();
     };
+
+    const payload = {
+        budget: budget,
+        expenses: expenses,
+    };
+
+    async function runOptimization() {
+        try {
+            const result = await optimizeSpending(payload);
+            console.log('AI Response:', result);
+            setRecommendations(result);
+        } catch (error: any) {
+            console.error(error);
+            setErrorMessage(error.message || 'Something went wrong. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <div className={styles.container}>
@@ -46,13 +74,11 @@ const BudgetAdvisor = () => {
 
             {/* Form */}
             <form onSubmit={handleFormSubmit} className={styles.form}>
-                {/* Total Budget Input */}
                 <div className={styles['budget-input-container']}>
                     <label className={styles['input-label']}>
                         Monthly Total Budget Goal
                     </label>
                     <div className={styles['input-wrapper']}>
-                        <DollarSign className={styles['input-icon']} />
                         <input
                             type="number"
                             value={budget}
@@ -62,8 +88,6 @@ const BudgetAdvisor = () => {
                         />
                     </div>
                 </div>
-
-
 
                 {/* Expenses Grid */}
                 <div className={styles['expenses-container']}>
@@ -86,7 +110,6 @@ const BudgetAdvisor = () => {
                     </div>
                 </div>
 
-                {/* Submit Button */}
                 <button
                     type="submit"
                     disabled={loading}
@@ -109,64 +132,21 @@ const BudgetAdvisor = () => {
                 <div className={styles.recommendations}>
                     {/* Budget Overview */}
                     <div className={styles['budget-overview']}>
-                        <h2 className={styles['section-title']}>Budget Overview</h2>
+                        <AlertCircle className="w-5 h-5 text-blue-600" />
+                        <h2 className={styles['section-title']}>Detailed Suggestions</h2>
                         <div className={styles['overview-grid']}>
                             <div className={styles['stat-card']}>
-                                <p className={styles['stat-label']}>Total Budget</p>
-                                <p className={styles['stat-value']}>
-                                    ${recommendations.overview.totalBudget}
-                                </p>
-                            </div>
-                            <div className={styles['stat-card']}>
-                                <p className={styles['stat-label']}>Total Expenses</p>
-                                <p className={styles['stat-value']}>
-                                    ${recommendations.overview.totalExpenses}
-                                </p>
-                            </div>
-                            <div className={styles['stat-card']}>
-                                <p className={styles['stat-label']}>Remaining</p>
-                                <p className={`${styles['stat-value']} ${
-                                    recommendations.overview.remaining < 0
-                                        ? styles['stat-value-negative']
-                                        : styles['stat-value-positive']
-                                }`}>
-                                    ${recommendations.overview.remaining}
-                                </p>
+                                <div className={styles['recommendation-description']}>
+                                    {formatToParagraphs(
+                                        recommendations
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {/* Separator Line */}
                     <hr className={styles['divider']} />
-
-
-                    {/* AI Recommendations */}
-                    <div>
-                        <h2 className={styles['section-title']}>AI Recommendations</h2>
-                        <div className={styles['recommendations-grid']}>
-                            {recommendations.suggestions.map((suggestion: any, index: number) => (
-                                <div key={index} className={styles['recommendation-card']}>
-                                    <div className={styles['recommendation-header']}>
-                                        <AlertCircle className="w-5 h-5 text-blue-600" />
-                                        <h3 className={styles['recommendation-title']}>{suggestion.title}</h3>
-                                    </div>
-                                    <p className={styles['recommendation-description']}>{suggestion.description}</p>
-                                    <div className={styles['recommendation-footer']}>
-                                        <span className={
-                                            suggestion.impact === 'High'
-                                                ? styles['impact-badge-high']
-                                                : styles['impact-badge-moderate']
-                                        }>
-                                            Impact: {suggestion.impact}
-                                        </span>
-                                        <span className={styles['saving-text']}>
-                                            Potential Saving: {suggestion.saving}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
                 </div>
             )}
         </div>

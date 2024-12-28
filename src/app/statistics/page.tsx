@@ -77,11 +77,11 @@ export default function StatisticsPage() {
             <div className={styles.overviewContainer}>
                 <div className={styles.card}>
                     <h2 className={styles.cardTitle}>Total Income</h2>
-                    <p className={styles.cardValue}>${totalIncome}</p>
+                    <p className={styles.cardValue}>${totalIncome.toFixed(2)}</p>
                 </div>
                 <div className={styles.card}>
                     <h2 className={styles.cardTitle}>Total Spending</h2>
-                    <p className={styles.cardValue}>${totalSpent}</p>
+                    <p className={styles.cardValue}>${totalSpent.toFixed(2)}</p>
                 </div>
             </div>
 
