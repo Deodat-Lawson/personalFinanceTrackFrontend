@@ -156,6 +156,8 @@ const Dashboard = () => {
                 return '#F472B6'; // Pink
             case 'healthcare':
                 return '#10B981'; // Teal
+            case 'education':
+                return '#7C3AED'; // Indigo
             case 'other':
                 return '#F59E0B'; // Yellow
             default:

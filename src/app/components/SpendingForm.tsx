@@ -10,6 +10,7 @@ interface SpendingFormProps {
 
 const categories = [
     'Housing',
+    'Education',
     'Transportation',
     'Food',
     'Utilities',

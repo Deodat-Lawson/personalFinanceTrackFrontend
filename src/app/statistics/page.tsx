@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../../styles/statistics.module.css";
 import {
     BarChart,
@@ -12,50 +12,62 @@ import {
     Legend,
     ResponsiveContainer,
 } from "recharts";
+import { getPreviousMonthIncome, getTotalIncome } from "@/lib/incomeService";
+import { getPreviousMonthSpendings, getTotalSpent } from "@/lib/spendingService";
 
 export default function StatisticsPage() {
-    // Sample data - replace with your API call
-    const monthlyData = [
-        {
-            month: "Jan",
-            income: 5000,
-            spending: {
-                groceries: 400,
-                utilities: 200,
-                rent: 1200,
-                entertainment: 300,
-            },
-        },
-        {
-            month: "Feb",
-            income: 5200,
-            spending: {
-                groceries: 380,
-                utilities: 220,
-                rent: 1200,
-                entertainment: 250,
-            },
-        },
-        // Add more months as needed...
-    ];
+    const [totalIncome, setTotalIncome] = useState(0);
+    const [totalSpent, setTotalSpent] = useState(0);
+    const [monthlyData, setMonthlyData] = useState([]);
 
-    // Transform data so we can display both income and each spending category in a single bar chart
-    const chartData = monthlyData.map((item) => ({
-        month: item.month,
-        income: item.income,
-        groceries: item.spending.groceries,
-        utilities: item.spending.utilities,
-        rent: item.spending.rent,
-        entertainment: item.spending.entertainment,
-    }));
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-    // Calculate totals for overview
-    const totalIncome = monthlyData.reduce((sum, month) => sum + month.income, 0);
-    const totalSpending = monthlyData.reduce(
-        (sum, month) =>
-            sum + Object.values(month.spending).reduce((a, b) => a + b, 0),
-        0
-    );
+    async function fetchData() {
+        try {
+            // Fetch overall totals
+            const [overallIncome, overallSpent] = await Promise.all([
+                getTotalIncome(),
+                getTotalSpent(),
+            ]);
+            setTotalIncome(overallIncome);
+            setTotalSpent(overallSpent);
+        } catch (error) {
+            console.error("Error fetching initial data:", error);
+        }
+
+        // Fetch monthly data
+        const incomePromises = [];
+        const spendingPromises = [];
+
+        for (let i = 0; i < 12; i++) {
+            incomePromises.push(getPreviousMonthIncome(i));
+            spendingPromises.push(getPreviousMonthSpendings(i));
+        }
+
+
+        const incomesArray = await Promise.all(incomePromises);
+        const spendingsArray = await Promise.all(spendingPromises);
+
+        console.log(incomesArray);
+        console.log(spendingsArray);
+
+        // Map each month to a data object
+        const formattedData = incomesArray.map((income, index) => {
+            const currentSpending = spendingsArray[index] || 0;
+            return {
+                month: new Date(
+                    new Date().setMonth(new Date().getMonth() - index)
+                ).toLocaleString("default", { month: "short" }),
+                income: income || 0,
+                spending: currentSpending || 0,
+            };
+        });
+
+        // Reverse so newest data is at the far right
+        setMonthlyData(formattedData.reverse());
+    }
 
     return (
         <div className={styles.container}>
@@ -65,11 +77,11 @@ export default function StatisticsPage() {
             <div className={styles.overviewContainer}>
                 <div className={styles.card}>
                     <h2 className={styles.cardTitle}>Total Income</h2>
-                    <p className={styles.cardValue}>${totalIncome.toLocaleString()}</p>
+                    <p className={styles.cardValue}>${totalIncome}</p>
                 </div>
                 <div className={styles.card}>
                     <h2 className={styles.cardTitle}>Total Spending</h2>
-                    <p className={styles.cardValue}>${totalSpending.toLocaleString()}</p>
+                    <p className={styles.cardValue}>${totalSpent}</p>
                 </div>
             </div>
 
@@ -78,17 +90,14 @@ export default function StatisticsPage() {
                 <h2 className={styles.chartTitle}>Income and Spending by Month</h2>
                 <div className={styles.chartWrapper}>
                     <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={chartData}>
+                        <BarChart data={monthlyData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="month" />
                             <YAxis />
                             <Tooltip />
                             <Legend />
                             <Bar dataKey="income" fill="#4ade80" name="Income" />
-                            <Bar dataKey="groceries" fill="#60a5fa" name="Groceries" />
-                            <Bar dataKey="utilities" fill="#34d399" name="Utilities" />
-                            <Bar dataKey="rent" fill="#a78bfa" name="Rent" />
-                            <Bar dataKey="entertainment" fill="#fbbf24" name="Entertainment" />
+                            <Bar dataKey="spending" fill="#ef4444" name="Spending" />
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
