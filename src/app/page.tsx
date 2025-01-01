@@ -227,7 +227,7 @@ const Dashboard = () => {
                             style={{ backgroundColor: item.color }}
                         />
                         <span className={styles.legendLabel}>{item.name}</span>
-                        <span className={styles.legendValue}>${item.value}</span>
+                        <span className={styles.legendValue}>${item.value.toFixed(2)}</span>
                     </div>
                 ))}
             </div>

@@ -9,6 +9,7 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
     title: 'Personal Financial Planner',
     description: 'A planner that helps people track their finances',
+    icons: [{ rel: "icon", url: "favicon.ico" }],
 }
 
 export default function RootLayout({
